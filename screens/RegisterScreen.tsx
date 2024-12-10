@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import { authService } from '../services/AuthService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 type RegisterScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Register'>;
@@ -15,9 +16,11 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps): JSX
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [loading,setLoading] = useState(false);
 
   const handleRegister = async (): Promise<void> => {
     try {
+      setLoading(true);
       if (!name || !email || !password || !confirmPassword) {
         Alert.alert('Error', 'Please fill in all fields');
         return;
@@ -39,11 +42,17 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps): JSX
         error.response?.data?.message || 'An error occurred during registration'
       );
     }
+    finally{
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.appTitle}>Howyoudoin</Text>
+        <Text style={styles.appSubtitle}>Connect with friends</Text>
+      </View>
       <TextInput
         style={styles.input}
         placeholder="Name"
@@ -87,12 +96,32 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps): JSX
       >
         <Text style={styles.linkText}>Already have an account? Login</Text>
       </TouchableOpacity>
+      {loading && <LoadingSpinner></LoadingSpinner>}
     </View>
   );
 }
 
   
 const styles = StyleSheet.create({
+    titleContainer: {
+      alignItems: 'center',
+      marginBottom: 50,
+    },
+    appTitle: {
+      fontSize: 42,
+      fontWeight: 'bold',
+      color: '#007AFF',
+      marginBottom: 10,
+      // Add a subtle text shadow
+      textShadowColor: 'rgba(0, 122, 255, 0.15)',
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 10,
+    },
+    appSubtitle: {
+      fontSize: 16,
+      color: '#666',
+      fontWeight: '500',
+    },
     container: {
       flex: 1,
       padding: 20,

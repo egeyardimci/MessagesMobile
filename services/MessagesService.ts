@@ -13,7 +13,6 @@ type MessageData = {
       ]
   };
   
-
 export const messagesService = {
     async getUserMessages(): Promise<MessageData|null> {
       const api = await secureApi();

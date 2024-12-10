@@ -8,6 +8,7 @@ export const publicApi = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout:3000,
 });
 
 let secureApiInstance: AxiosInstance | null = null;

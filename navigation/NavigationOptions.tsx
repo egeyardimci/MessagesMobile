@@ -45,7 +45,7 @@ export const friendsScreenOptions = ({ navigation }: any): BottomTabNavigationOp
   <View style ={styles.container}>
    <TouchableOpacity 
      onPress={() => {
-      navigation.push("AddFriend")
+      navigation.push("FriendRequests")
      }} 
      style={{ marginRight: 15 }}
    >

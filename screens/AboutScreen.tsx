@@ -24,14 +24,14 @@ export default function AboutScreen() {
          onPress={() => Linking.openURL('mailto:support@howyoudoin.com')}
        >
          <Icon name="mail" size={20} color="#007AFF" />
-         <Text style={styles.linkText}>support@howyoudoin.com</Text>
+         <Text style={styles.linkText}>ege.yardimci@sabanciuniv.edu</Text>
        </TouchableOpacity>
        <TouchableOpacity 
          style={styles.linkItem}
-         onPress={() => Linking.openURL('https://howyoudoin.com')}
+         onPress={() => Linking.openURL('https://egeyardimci.github.io')}
        >
          <Icon name="globe" size={20} color="#007AFF" />
-         <Text style={styles.linkText}>www.howyoudoin.com</Text>
+         <Text style={styles.linkText}>egeyardimci.github.io</Text>
        </TouchableOpacity>
      </View>
 

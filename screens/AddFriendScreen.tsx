@@ -2,22 +2,24 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity, Text, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
+import { friendsService } from '../services/FriendsService';
 
 type AddFriendScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'AddFriend'>;
 };
 
 export default function AddFriendScreen({ navigation }: AddFriendScreenProps): JSX.Element {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
 
   const handleAddFriend = async () => {
     try {
-      if (!username.trim()) {
+      if (!email.trim()) {
         Alert.alert('Error', 'Please enter an email adress');
         return;
       }
-      // Add your API call here
-      console.log('Adding friend:', username);
+
+      const friendRequestData:FriendRequestData = {email:email}
+      const response = await friendsService.sendFriendRequest(friendRequestData);
       Alert.alert('Success', 'Friend request sent!', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
@@ -32,8 +34,8 @@ export default function AddFriendScreen({ navigation }: AddFriendScreenProps): J
       <TextInput
         style={styles.input}
         placeholder="Enter an email adress"
-        value={username}
-        onChangeText={setUsername}
+        value={email}
+        onChangeText={setEmail}
         autoCapitalize="none"
       />
       <TouchableOpacity style={styles.button} onPress={handleAddFriend}>

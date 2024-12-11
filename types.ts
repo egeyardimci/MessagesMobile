@@ -6,6 +6,7 @@ export type RootStackParamList = {
   CreateGroup: undefined;
   About: undefined;
   Profile: undefined;
+  FriendRequests: undefined;
   Conversation: ConversationParams
 };
 

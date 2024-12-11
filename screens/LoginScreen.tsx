@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps): JSX.Eleme
     } catch (error:any) {
       Alert.alert(
         'Error',
-        error.response?.data?.error || 'An error occurred during login'
+        error.response?.data?.message || 'An error occurred during login'
       );
     }
     finally{

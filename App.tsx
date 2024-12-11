@@ -12,6 +12,7 @@ import ConversationScreen from './screens/ConversationScreen';
 import AboutScreen from './screens/AboutScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import { UserProvider } from './context/UserContext';
+import FriendRequestsScreen from './screens/FriendRequestsScreen';
 
 const Stack = createStackNavigator();
 
@@ -61,6 +62,14 @@ export default function App() {
         component={ProfileScreen}
         options={{
           title: 'Profile',
+          headerTintColor: '#007AFF',
+        }}
+      />
+        <Stack.Screen 
+        name="FriendRequests" 
+        component={FriendRequestsScreen}
+        options={{
+          title: 'Friend Requests',
           headerTintColor: '#007AFF',
         }}
       />

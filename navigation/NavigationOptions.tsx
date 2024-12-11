@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { StyleSheet } from 'react-native';
 
 const commonHeaderOptions = {
  headerStyle: {
@@ -41,6 +42,15 @@ export const friendsScreenOptions = ({ navigation }: any): BottomTabNavigationOp
    <Icon name="user-plus" size={size} color={color} />
  ),
  headerRight: () => (
+  <View style ={styles.container}>
+   <TouchableOpacity 
+     onPress={() => {
+      navigation.push("AddFriend")
+     }} 
+     style={{ marginRight: 15 }}
+   >
+     <Icon name="inbox" size={24} color="#007AFF" />
+   </TouchableOpacity>
    <TouchableOpacity 
      onPress={() => {
       navigation.push("AddFriend")
@@ -49,6 +59,7 @@ export const friendsScreenOptions = ({ navigation }: any): BottomTabNavigationOp
    >
      <Icon name="plus" size={24} color="#007AFF" />
    </TouchableOpacity>
+   </View>
  ),
 });
 
@@ -64,4 +75,11 @@ export const settingsScreenOptions = ({ navigation }: any): BottomTabNavigationO
  tabBarIcon: ({ color, size }) => (
    <Icon name="settings" size={size} color={color} />
  ),
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    backgroundColor: '#fff',
+  },
 });

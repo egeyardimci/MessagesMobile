@@ -1,77 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainTabParamList, RootStackParamList } from '../types';
+import { UserDetails } from '../context/ContextTypes';
+import { friendsService } from '../services/FriendsService';
 
-type Friend = {
- id: string;
- name: string;
- status: 'online' | 'offline';
- lastSeen?: string;
- avatar: string;
-};
-
-const mockFriends: Friend[] = [
- {
-   id: '1',
-   name: 'John Smith',
-   status: 'online',
-   avatar: 'https://via.placeholder.com/50'
- },
- {
-   id: '2',
-   name: 'Emma Wilson',
-   status: 'offline',
-   lastSeen: '2 hours ago',
-   avatar: 'https://via.placeholder.com/50'
- },
- {
-   id: '3',
-   name: 'Michael Brown',
-   status: 'online',
-   avatar: 'https://via.placeholder.com/50'
- },
- {
-   id: '4',
-   name: 'Sarah Davis',
-   status: 'offline',
-   lastSeen: '1 day ago',
-   avatar: 'https://via.placeholder.com/50'
- },
- {
-   id: '5',
-   name: 'James Miller',
-   status: 'online',
-   avatar: 'https://via.placeholder.com/50'
- }
-];
 
 type FriendsScreenProps = {
  navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
 
 export default function FriendsScreen({ navigation }: FriendsScreenProps): JSX.Element {
+  const [friends, setFriends] = useState<UserDetails[]>([]);
 
-    const navigateToMessage = (name : string) => {
-        navigation.navigate('Conversation', { 
-            id: 'someId',
-            name: name
-        });
+  useEffect(() => {
+    const fetchUserFriends = async (): Promise<void> => {
+      try {
+        const friendsData:UserDetails[]|null = await friendsService.getUserFriends();
+        if(friendsData){
+          setFriends(friendsData);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
 
-    const renderFriend = ({ item }: { item: Friend }) => (
+    fetchUserFriends();
+  }, []);
+
+  const navigateToMessage = (name : string) => {
+    navigation.navigate('Conversation', { 
+        id: 'someId',
+        name: name
+    });
+  }
+
+    const renderFriend = ({ item }: { item: UserDetails }) => (
     <TouchableOpacity onPress={() => navigateToMessage(item.name)} style={styles.friendContainer}>
         <View style={styles.avatarContainer}>
         <Image 
-            source={{ uri: item.avatar }}
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={styles.avatar}
         />
         </View>
         <View style={styles.friendInfo}>
-        <Text style={styles.friendName}>{item.name}</Text>
-        <Text style={styles.statusText}>
-            {item.status === 'online' ? 'Online' : `Last seen ${item.lastSeen}`}
-        </Text>
+        <Text style={styles.friendName}>{item.name + " " + item.lastname || " null"}</Text>
         </View>
         <TouchableOpacity onPress={() => navigateToMessage(item.name)} style={styles.messageButton}>
         <Text style={styles.messageButtonText}>Message</Text>
@@ -82,9 +55,9 @@ export default function FriendsScreen({ navigation }: FriendsScreenProps): JSX.E
     return (
     <SafeAreaView style={styles.container}>
         <FlatList
-        data={mockFriends}
+        data={friends}
         renderItem={renderFriend}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.uid}
         style={styles.list}
         />
     </SafeAreaView>

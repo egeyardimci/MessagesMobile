@@ -11,11 +11,13 @@ import CreateGroupScreen from './screens/CreateGroupScreen';
 import ConversationScreen from './screens/ConversationScreen';
 import AboutScreen from './screens/AboutScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import { UserProvider } from './context/UserContext';
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
+    <UserProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
@@ -64,5 +66,6 @@ export default function App() {
       />
       </Stack.Navigator>
     </NavigationContainer>
+    </UserProvider>
   );
 }

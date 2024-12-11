@@ -1,53 +1,41 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList, Alert, RefreshControl } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainTabParamList, RootStackParamList } from '../types';
-
-type Message = {
-  id: string;
-  sender: string;
-  message: string;
-  time: string;
-};
-
-const mockMessages: Message[] = [
-  {
-    id: '1',
-    sender: 'John Doe',
-    message: 'Hey, how are you?',
-    time: '10:30 AM',
-  },
-  {
-    id: '2',
-    sender: 'Jane Smith',
-    message: 'Did you see the latest update?',
-    time: '9:45 AM',
-  },
-  {
-    id: '3',
-    sender: 'Mike Johnson',
-    message: 'Meeting at 3 PM today',
-    time: 'Yesterday',
-  },
-  {
-    id: '4',
-    sender: 'Sarah Williams',
-    message: 'Thanks for your help!',
-    time: 'Yesterday',
-  },
-  {
-    id: '5',
-    sender: 'David Brown',
-    message: 'Let\'s catch up soon',
-    time: 'Yesterday',
-  }
-];
+import { friendsService } from '../services/FriendsService';
+import { useUser } from '../context/UserContext';
+import { Chat } from '../context/ContextTypes';
+import { getRelativeTime } from '../utils/RelativeTime';
+import { userService } from '../services/UserService';
 
 type MessagesScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
 
 export default function MessagesScreen({ navigation }: MessagesScreenProps): JSX.Element {
+
+  const {userDetails} = useUser();
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    const fetchUserChats = async (): Promise<void> => {
+      try {
+        const chatData:Chat[]|null = await userService.fetchUserChats();
+        if(chatData){
+          setChats(chatData);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchUserChats();
+  }, []);
+
+  const onRefresh = React.useCallback(() => {
+      //TODO: Implement the refresh
+  }, []);
 
   const navigateToMessage = (name : string) => {
     navigation.navigate('Conversation', { 
@@ -56,16 +44,16 @@ export default function MessagesScreen({ navigation }: MessagesScreenProps): JSX
     });
   }
 
-  const renderMessage = ({ item }: { item: Message }) => (
-    <TouchableOpacity onPress={() => navigateToMessage(item.sender)} style={styles.messageContainer}>
+  const renderMessage = ({ item }: { item: Chat }) => (
+    <TouchableOpacity onPress={()=> navigateToMessage(item.participant.name + " " + item.participant.lastname)} style={styles.messageContainer}>
       <View style={styles.messageContent}>
         <View style={styles.messageHeader}>
-          <Text style={styles.senderName}>{item.sender}</Text>
-          <Text style={styles.messageTime}>{item.time}</Text>
+          <Text style={styles.senderName}>{item.participant.name+ " " + item.participant.lastname}</Text>
+          <Text style={styles.messageTime}>{getRelativeTime(item.lastMessage.timestamp)}</Text>
         </View>
         <View style={styles.messageBody}>
           <Text style={styles.messageText} numberOfLines={1}>
-            {item.message}
+            {item.lastMessage.content}
           </Text>
         </View>
       </View>
@@ -75,10 +63,18 @@ export default function MessagesScreen({ navigation }: MessagesScreenProps): JSX
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={mockMessages}
+        data={chats}
         renderItem={renderMessage}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.participant.uid}
         style={styles.list}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#007AFF"]} // Android
+            tintColor="#007AFF" // iOS
+          />
+        }
       />
     </SafeAreaView>
   );

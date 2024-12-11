@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { MainTabParamList, RootStackParamList } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Feather';
+import { clearSecureApi } from '../services/Api';
 
 type SettingsScreenProps = {
  navigation: StackNavigationProp<RootStackParamList, 'Home'>;
@@ -23,6 +24,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps): JSX
          text: "Logout",
          onPress: async () => {
            await AsyncStorage.removeItem("token");
+           clearSecureApi();
            navigation.replace('Login');
          },
          style: 'destructive'

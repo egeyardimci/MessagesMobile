@@ -1,65 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainTabParamList, RootStackParamList } from '../types';
-
-type Group = {
- id: string;
- name: string;
- lastMessage: string;
- time: string;
- memberCount: number;
- unreadCount: number;
-};
-
-const mockGroups: Group[] = [
- {
-   id: '1',
-   name: 'Project Team Alpha',
-   lastMessage: 'Let\'s meet tomorrow at 10',
-   time: '10:30 AM',
-   memberCount: 8,
-   unreadCount: 3
- },
- {
-   id: '2', 
-   name: 'Family Group',
-   lastMessage: 'Who\'s coming to dinner?',
-   time: '9:45 AM',
-   memberCount: 5,
-   unreadCount: 0
- },
- {
-   id: '3',
-   name: 'Gaming Squad',
-   lastMessage: 'Anyone up for a game?',
-   time: 'Yesterday',
-   memberCount: 12,
-   unreadCount: 5
- },
- {
-   id: '4',
-   name: 'Tech Discussion',
-   lastMessage: 'Check out this new feature!',
-   time: 'Yesterday',
-   memberCount: 25,
-   unreadCount: 1
- },
- {
-   id: '5',
-   name: 'Book Club',
-   lastMessage: 'Next book: The Great Gatsby',
-   time: 'Yesterday',
-   memberCount: 15,
-   unreadCount: 0
- }
-];
+import { Group } from '../context/ContextTypes';
+import { userService } from '../services/UserService';
+import { getRelativeTime } from '../utils/RelativeTime';
 
 type GroupsScreenProps = {
  navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
 
 export default function GroupsScreen({ navigation }: GroupsScreenProps): JSX.Element {
+
+  const [groups, setGroups] = useState<Group[]>([]);
+
+  useEffect(() => {
+    const fetchUserGroups = async (): Promise<void> => {
+      try {
+        const groupsData:Group[]|null = await userService.fetchUserGroups();
+        if(groupsData){
+          setGroups(groupsData);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchUserGroups();
+  }, []);
 
   const navigateToMessage = (name : string) => {
     navigation.navigate('Conversation', { 
@@ -73,14 +41,14 @@ export default function GroupsScreen({ navigation }: GroupsScreenProps): JSX.Ele
      <View style={styles.groupContent}>
        <View style={styles.groupHeader}>
          <Text style={styles.groupName}>{item.name}</Text>
-         <Text style={styles.groupTime}>{item.time}</Text>
+         <Text style={styles.groupTime}>{getRelativeTime(item.lastMessage.timestamp)}</Text>
        </View>
        <View style={styles.groupBody}>
          <Text style={styles.lastMessage} numberOfLines={1}>
-           {item.lastMessage}
+           {item.lastMessage.content}
          </Text>
          <View style={styles.groupInfo}>
-           <Text style={styles.memberCount}>{item.memberCount} members</Text>
+           <Text style={styles.memberCount}>{item.members.length} members</Text>
          </View>
        </View>
      </View>
@@ -90,7 +58,7 @@ export default function GroupsScreen({ navigation }: GroupsScreenProps): JSX.Ele
  return (
    <SafeAreaView style={styles.container}>
      <FlatList
-       data={mockGroups}
+       data={groups}
        renderItem={renderGroup}
        keyExtractor={item => item.id}
        style={styles.list}

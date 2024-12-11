@@ -34,3 +34,7 @@ export const secureApi = async () => {
     return null;
   }
 };
+
+export const clearSecureApi = () => {
+  secureApiInstance = null;
+};

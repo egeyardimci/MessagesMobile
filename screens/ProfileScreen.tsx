@@ -2,21 +2,21 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { UserDetails } from '../context/ContextTypes';
+import { useUser } from '../context/UserContext';
 
-const mockUserData = {
- firstName: 'John',
- lastName: 'Doe',
- email: 'john.doe@example.com',
-};
 
 export default function ProfileScreen() {
- const renderInfoItem = (icon: string, label: string, value: string) => (
+  const { userDetails } = useUser();
+  const userData = userDetails;
+
+ const renderInfoItem = (icon: string, label: string, value: string|undefined) => (
    <View style={styles.infoItem}>
      <View style={styles.labelContainer}>
        <Icon name={icon} size={20} color="#666" />
        <Text style={styles.label}>{label}</Text>
      </View>
-     <Text style={styles.value}>{value}</Text>
+     <Text style={styles.value}>{value|| "null"}</Text>
    </View>
  );
 
@@ -26,20 +26,20 @@ export default function ProfileScreen() {
        <View style={styles.avatarContainer}>
          <View style={styles.avatar}>
            <Text style={styles.avatarText}>
-             {mockUserData.firstName[0]}{mockUserData.lastName[0]}
+           {userData?.name ? userData.name[0] : "n"}{userData?.lastname ? userData.name[0] : "n"}
            </Text>
          </View>
        </View>
        <Text style={styles.name}>
-         {mockUserData.firstName} {mockUserData.lastName}
+         {userData?.name || "null"} {userData?.lastname || "null"}
        </Text>
      </View>
 
      <View style={styles.section}>
        <Text style={styles.sectionTitle}>Personal Information</Text>
-       {renderInfoItem('user', 'First Name', mockUserData.firstName)}
-       {renderInfoItem('user', 'Last Name', mockUserData.lastName)}
-       {renderInfoItem('mail', 'Email', mockUserData.email)}
+       {renderInfoItem('user', 'First Name', userData?.name)}
+       {renderInfoItem('user', 'Last Name', userData?.lastname)}
+       {renderInfoItem('mail', 'Email', userData?.email)}
      </View>
    </ScrollView>
  );

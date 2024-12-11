@@ -1,0 +1,5 @@
+- Implement the chat screen to get messages from the API
+- Implement adding friend functionality
+- Create and Implement accept friend requests screen and functionality
+- Add get group members button to group chats
+- Add real time messages

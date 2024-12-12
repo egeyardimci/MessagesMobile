@@ -39,6 +39,7 @@ export default function GroupsScreen({ navigation }: GroupsScreenProps): JSX.Ele
     navigation.navigate('Conversation', { 
         id: id,
         name: name,
+        email:"null",
         isGroup:true
     });
   }
@@ -48,12 +49,10 @@ export default function GroupsScreen({ navigation }: GroupsScreenProps): JSX.Ele
      <View style={styles.groupContent}>
        <View style={styles.groupHeader}>
          <Text style={styles.groupName}>{item.name}</Text>
-         <Text style={styles.groupTime}>{getRelativeTime(item.lastMessage.timestamp)}</Text>
+         {item.lastMessage ? (<Text style={styles.groupTime}>{getRelativeTime(item.lastMessage.timestamp)}</Text>) : null}       
        </View>
        <View style={styles.groupBody}>
-         <Text style={styles.lastMessage} numberOfLines={1}>
-           {item.lastMessage.content}
-         </Text>
+        {item.lastMessage ? (<Text style={styles.lastMessage} numberOfLines={1}>{item.lastMessage.content}</Text>) : null}         
          <View style={styles.groupInfo}>
            <Text style={styles.memberCount}>{item.members.length} members</Text>
          </View>

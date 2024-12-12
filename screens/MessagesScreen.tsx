@@ -38,16 +38,17 @@ export default function MessagesScreen({ navigation }: MessagesScreenProps): JSX
       setRefreshing(false);
   }, []);
 
-  const navigateToMessage = (name : string) => {
+  const navigateToMessage = (name : string,id:string, email:string) => {
     navigation.navigate('Conversation', { 
-        id: 'someId',
+        id: id,
         name: name,
+        email: email,
         isGroup: false
     });
   }
 
   const renderMessage = ({ item }: { item: Chat }) => (
-    <TouchableOpacity onPress={()=> navigateToMessage(item.participant.name + " " + item.participant.lastname)} style={styles.messageContainer}>
+    <TouchableOpacity onPress={()=> navigateToMessage(item.participant.name + " " + item.participant.lastname,item.participant.id,item.participant.email)} style={styles.messageContainer}>
       <View style={styles.messageContent}>
         <View style={styles.messageHeader}>
           <Text style={styles.senderName}>{item.participant.name+ " " + item.participant.lastname}</Text>
@@ -67,7 +68,7 @@ export default function MessagesScreen({ navigation }: MessagesScreenProps): JSX
       <FlatList
         data={chats}
         renderItem={renderMessage}
-        keyExtractor={item => item.participant.uid}
+        keyExtractor={item => item.participant.id}
         style={styles.list}
         refreshControl={
         <RefreshControl

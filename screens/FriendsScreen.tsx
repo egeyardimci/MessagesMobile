@@ -35,16 +35,17 @@ export default function FriendsScreen({ navigation }: FriendsScreenProps): JSX.E
       setRefreshing(false);
   }, []);
 
-  const navigateToMessage = (name : string) => {
+  const navigateToMessage = (name : string,id:string,email:string) => {
     navigation.navigate('Conversation', { 
-        id: 'someId',
+        id: id,
         name: name,
+        email: email,
         isGroup: false
     });
   }
 
     const renderFriend = ({ item }: { item: UserDetails }) => (
-    <TouchableOpacity onPress={() => navigateToMessage(item.name)} style={styles.friendContainer}>
+    <TouchableOpacity onPress={() => navigateToMessage(item.name,item.id,item.email)} style={styles.friendContainer}>
         <View style={styles.avatarContainer}>
         <Image 
             source={{ uri: 'https://via.placeholder.com/50' }}
@@ -54,7 +55,7 @@ export default function FriendsScreen({ navigation }: FriendsScreenProps): JSX.E
         <View style={styles.friendInfo}>
         <Text style={styles.friendName}>{item.name + " " + item.lastname || " null"}</Text>
         </View>
-        <TouchableOpacity onPress={() => navigateToMessage(item.name)} style={styles.messageButton}>
+        <TouchableOpacity onPress={() => navigateToMessage(item.name,item.id,item.email)} style={styles.messageButton}>
         <Text style={styles.messageButtonText}>Message</Text>
         </TouchableOpacity>
     </TouchableOpacity>
@@ -65,7 +66,7 @@ export default function FriendsScreen({ navigation }: FriendsScreenProps): JSX.E
         <FlatList
         data={friends}
         renderItem={renderFriend}
-        keyExtractor={item => item.uid}
+        keyExtractor={item => item.id}
         style={styles.list}
         refreshControl={
         <RefreshControl

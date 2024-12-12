@@ -22,5 +22,6 @@ export type MainTabParamList = {
 type ConversationParams = {
   name: string;
   id: string;
+  email:string;
   isGroup: boolean;
 };

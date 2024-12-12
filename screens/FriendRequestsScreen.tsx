@@ -74,7 +74,7 @@ export default function FriendRequestsScreen({ navigation }: FriendRequestsScree
         <FlatList
         data={friendRequests}
         renderItem={renderFriend}
-        keyExtractor={item => item.uid}
+        keyExtractor={item => item.id}
         style={styles.list}
         refreshControl={
         <RefreshControl

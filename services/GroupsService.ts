@@ -15,4 +15,16 @@ export const gruopsService = {
       return response?.data.members;
     },
 
+    async createGroup(name:string,members:string[]): Promise<void> {
+      const body = {name: name,members: members}
+      const api = await secureApi();
+      await api?.post(`/groups/create`,body);
+    },
+    
+    async getGroupChat(id:string): Promise<MessageData|null> {
+      const api = await secureApi();
+      const response = await api?.get<MessageData>(`/groups/${id}/messages`);
+      return response?.data || null;
+    }
+
 };

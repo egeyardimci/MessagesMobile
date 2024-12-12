@@ -1,3 +1,1 @@
-- Fix and implement the create group screen
-- Implement the chat screen to get messages from the API
 - Add real time messages

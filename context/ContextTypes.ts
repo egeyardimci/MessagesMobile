@@ -4,14 +4,14 @@ export interface Message {
     content:string;
     sender:string;
     receiver:string;
-    groupMessage:string;
+    groupMessage:boolean;
 }
 
 export interface UserDetails {
     name: string;
     lastname: string;
     email: string;
-    uid: string;
+    id: string;
   }
 
   export interface Group {

@@ -52,7 +52,7 @@ export default function MembersScreen({ navigation , route}: any): JSX.Element {
         <FlatList
         data={members}
         renderItem={renderMembers}
-        keyExtractor={item => item.uid}
+        keyExtractor={item => item.id}
         style={styles.list}
         refreshControl={
         <RefreshControl

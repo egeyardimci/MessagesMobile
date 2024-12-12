@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,82 +11,76 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-
-type Message = {
-  id: string;
-  text: string;
-  sender: 'me' | 'other';
-  timestamp: string;
-};
-
-const mockMessages: Message[] = [
-  {
-    id: '1',
-    text: 'Hey, how are you?',
-    sender: 'other',
-    timestamp: '10:00 AM'
-  },
-  {
-    id: '2',
-    text: 'I\'m good! How about you?',
-    sender: 'me',
-    timestamp: '10:01 AM'
-  },
-  {
-    id: '3',
-    text: 'Great! Want to grab coffee later?',
-    sender: 'other',
-    timestamp: '10:02 AM'
-  },
-  {
-    id: '4',
-    text: 'Sure, what time works for you?',
-    sender: 'me',
-    timestamp: '10:03 AM'
-  },
-  {
-    id: '5',
-    text: 'How about 3pm at the usual place?',
-    sender: 'other',
-    timestamp: '10:04 AM'
-  },
-  {
-    id: '6',
-    text: 'Perfect, see you then! 👋',
-    sender: 'me',
-    timestamp: '10:05 AM'
-  },
-];
+import { Message } from '../context/ContextTypes';
+import { useUser } from '../context/UserContext';
+import { messagesService } from '../services/MessagesService';
+import { getRelativeTime } from '../utils/RelativeTime';
+import { gruopsService } from '../services/GroupsService';
 
 export default function ConversationScreen({ navigation, route }: any): JSX.Element {
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const {userDetails} = useUser();
+
+  const getUserMessages = async () => {
+    try {
+      const messagesData:MessageData|null = await messagesService.getUserChat(route.params.id);
+      if(messagesData){
+        setMessages(messagesData.messageList);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getGroupMessages = async () => {
+    try {
+      const messagesData:MessageData|null = await gruopsService.getGroupChat(route.params.id);
+      if(messagesData){
+        setMessages(messagesData.messageList);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if(!route.params.isGroup){
+      getUserMessages();
+    }
+    else{
+      getGroupMessages();
+    }
+    //TODO
+    //open socket connection
+  }, []);
 
   const sendMessage = () => {
-    if (message.trim()) {
-      const newMessage: Message = {
-        id: Date.now().toString(),
-        text: message,
-        sender: 'me',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages([...messages, newMessage]);
-      setMessage('');
+    if(!route.params.isGroup){
+      //TODO
+      //send message to user
+    }
+    else{
+      //TODO
+      //send message to group
     }
   };
 
   const renderMessage = ({ item }: { item: Message }) => (
     <View style={[
       styles.messageContainer,
-      item.sender === 'me' ? styles.myMessage : styles.otherMessage
+      item.sender === userDetails?.id ? styles.myMessage : styles.otherMessage
     ]}>
       <Text style={[
         styles.messageText,
-        item.sender === 'me' ? styles.myMessageText : styles.otherMessageText
+        item.sender === userDetails?.id ? styles.myMessageText : styles.otherMessageText
       ]}>
-        {item.text}
+        {item.content}
       </Text>
-      <Text style={styles.timestamp}>{item.timestamp}</Text>
+      <Text style={[
+      styles.timestamp,
+      item.sender === userDetails?.id ? styles.myTimestamp : styles.timestamp
+    ]}>{item.timestamp && getRelativeTime(item.timestamp)}</Text>
     </View>
   );
 
@@ -165,6 +159,12 @@ const styles = StyleSheet.create({
   timestamp: {
     fontSize: 12,
     color: 'black',
+    marginTop: 4,
+    alignSelf: 'flex-end',
+  },
+  myTimestamp: {
+    fontSize: 12,
+    color: 'white',
     marginTop: 4,
     alignSelf: 'flex-end',
   },

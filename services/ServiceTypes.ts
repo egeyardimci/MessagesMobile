@@ -38,7 +38,5 @@ type RegisterResponse = {
     message: string;
 };
 
-type AddGroupMemberRequest = {
-    email: string;
-};
+
 

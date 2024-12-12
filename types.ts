@@ -7,6 +7,7 @@ export type RootStackParamList = {
   About: undefined;
   Profile: undefined;
   FriendRequests: undefined;
+  Members: undefined;
   Conversation: ConversationParams
 };
 
@@ -20,4 +21,5 @@ export type MainTabParamList = {
 type ConversationParams = {
   name: string;
   id: string;
+  isGroup: boolean;
 };

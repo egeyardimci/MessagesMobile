@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList, Image, RefreshControl } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainTabParamList, RootStackParamList } from '../types';
 import { UserDetails } from '../context/ContextTypes';
@@ -12,26 +12,34 @@ type FriendsScreenProps = {
 
 export default function FriendsScreen({ navigation }: FriendsScreenProps): JSX.Element {
   const [friends, setFriends] = useState<UserDetails[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchUserFriends = async (): Promise<void> => {
+    try {
+      const friendsData:UserDetails[]|null = await friendsService.getUserFriends();
+      if(friendsData){
+        setFriends(friendsData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-    const fetchUserFriends = async (): Promise<void> => {
-      try {
-        const friendsData:UserDetails[]|null = await friendsService.getUserFriends();
-        if(friendsData){
-          setFriends(friendsData);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
     fetchUserFriends();
+  }, []);
+
+  const onRefresh = React.useCallback(async () => {
+      setRefreshing(true);
+      await fetchUserFriends();
+      setRefreshing(false);
   }, []);
 
   const navigateToMessage = (name : string) => {
     navigation.navigate('Conversation', { 
         id: 'someId',
-        name: name
+        name: name,
+        isGroup: false
     });
   }
 
@@ -59,6 +67,14 @@ export default function FriendsScreen({ navigation }: FriendsScreenProps): JSX.E
         renderItem={renderFriend}
         keyExtractor={item => item.uid}
         style={styles.list}
+        refreshControl={
+        <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#007AFF"]} // Android
+            tintColor="#007AFF" // iOS
+          />
+        }
         />
     </SafeAreaView>
     );

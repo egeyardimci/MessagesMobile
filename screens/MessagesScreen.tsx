@@ -14,33 +14,35 @@ type MessagesScreenProps = {
 
 export default function MessagesScreen({ navigation }: MessagesScreenProps): JSX.Element {
 
-  const {userDetails} = useUser();
   const [chats, setChats] = useState<Chat[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchUserChats = async (): Promise<void> => {
-      try {
-        const chatData:Chat[]|null = await userService.fetchUserChats();
-        if(chatData){
-          setChats(chatData);
-        }
-      } catch (error) {
-        console.log(error);
+  const fetchUserChats = async (): Promise<void> => {
+    try {
+      const chatData:Chat[]|null = await userService.fetchUserChats();
+      if(chatData){
+        setChats(chatData);
       }
+    } catch (error) {
+      console.log(error);
     }
+  }
 
+  useEffect(() => {
     fetchUserChats();
   }, []);
 
-  const onRefresh = React.useCallback(() => {
-      //TODO: Implement the refresh
+  const onRefresh = React.useCallback(async () => {
+      setRefreshing(true);
+      await fetchUserChats();
+      setRefreshing(false);
   }, []);
 
   const navigateToMessage = (name : string) => {
     navigation.navigate('Conversation', { 
         id: 'someId',
-        name: name
+        name: name,
+        isGroup: false
     });
   }
 
@@ -68,7 +70,7 @@ export default function MessagesScreen({ navigation }: MessagesScreenProps): JSX
         keyExtractor={item => item.participant.uid}
         style={styles.list}
         refreshControl={
-          <RefreshControl
+        <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
             colors={["#007AFF"]} // Android

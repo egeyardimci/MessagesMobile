@@ -1,5 +1,5 @@
 import { StackNavigationOptions } from '@react-navigation/stack';
-import { TouchableOpacity, Text, View } from 'react-native';
+import { TouchableOpacity, Text, View, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Feather';
@@ -76,6 +76,35 @@ export const settingsScreenOptions = ({ navigation }: any): BottomTabNavigationO
    <Icon name="settings" size={size} color={color} />
  ),
 });
+
+export const membersScreenOptions = ({ navigation ,route }: any): StackNavigationOptions => ({
+  title: route.params?.name + " Members" || 'Group Members',
+  headerTintColor: '#007AFF',
+ });
+
+ export const conversationScreenOptions = ({ navigation ,route }: any): StackNavigationOptions => ({
+    headerTintColor: '#007AFF',
+    headerTitle: () => {
+      if(route.params?.isGroup){
+        return(
+          <Pressable 
+            onPress={() => navigation.navigate('Members', {name: route.params?.name , id:route.params?.id, isGroup: route.params?.isGroup})}
+          >
+            <Text style={{ fontSize: 20, fontWeight: 600, color: '#007AFF' }}>
+              {route.params?.name || 'Chat'}
+            </Text>
+          </Pressable>
+          )
+      }
+      else{
+        return(
+          <Text style={{ fontSize: 20, fontWeight: 600, color: '#007AFF' }}>
+          {route.params?.name || 'Chat'}
+        </Text>
+        )
+      }
+    },
+ });
 
 const styles = StyleSheet.create({
   container: {

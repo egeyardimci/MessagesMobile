@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList, RefreshControl } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainTabParamList, RootStackParamList } from '../types';
 import { Group } from '../context/ContextTypes';
@@ -13,8 +13,8 @@ type GroupsScreenProps = {
 export default function GroupsScreen({ navigation }: GroupsScreenProps): JSX.Element {
 
   const [groups, setGroups] = useState<Group[]>([]);
+    const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
     const fetchUserGroups = async (): Promise<void> => {
       try {
         const groupsData:Group[]|null = await userService.fetchUserGroups();
@@ -25,19 +25,26 @@ export default function GroupsScreen({ navigation }: GroupsScreenProps): JSX.Ele
         console.log(error);
       }
     }
-
+  useEffect(() => {
     fetchUserGroups();
   }, []);
 
-  const navigateToMessage = (name : string) => {
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        await fetchUserGroups();
+        setRefreshing(false);
+    }, []);
+
+  const navigateToMessage = (name : string,id:string) => {
     navigation.navigate('Conversation', { 
-        id: 'someId',
-        name: name
+        id: id,
+        name: name,
+        isGroup:true
     });
   }
 
  const renderGroup = ({ item }: { item: Group }) => (
-   <TouchableOpacity onPress={() => navigateToMessage(item.name)} style={styles.groupContainer}>
+   <TouchableOpacity onPress={() => navigateToMessage(item.name,item.id)} style={styles.groupContainer}>
      <View style={styles.groupContent}>
        <View style={styles.groupHeader}>
          <Text style={styles.groupName}>{item.name}</Text>
@@ -62,6 +69,14 @@ export default function GroupsScreen({ navigation }: GroupsScreenProps): JSX.Ele
        renderItem={renderGroup}
        keyExtractor={item => item.id}
        style={styles.list}
+      refreshControl={
+      <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={["#007AFF"]} // Android
+          tintColor="#007AFF" // iOS
+        />
+      }
      />
    </SafeAreaView>
  );

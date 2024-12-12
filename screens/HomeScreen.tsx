@@ -1,20 +1,20 @@
 import React, { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MessagesScreen from '../screens/MessagesScreen';
+import MessagesScreen from './MessagesScreen';
 import { MainTabParamList } from '../types';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import { friendsScreenOptions, groupsScreenOptions, messagesScreenOptions, settingsScreenOptions } from './NavigationOptions';
-import GroupsScreen from '../screens/GroupsScreen';
-import FriendsScreen from '../screens/FriendsScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import LoginScreen from './LoginScreen';
+import RegisterScreen from './RegisterScreen';
+import { friendsScreenOptions, groupsScreenOptions, messagesScreenOptions, settingsScreenOptions } from '../navigation/NavigationOptions';
+import GroupsScreen from './GroupsScreen';
+import FriendsScreen from './FriendsScreen';
+import SettingsScreen from './SettingsScreen';
 import { UserDetails } from '../context/ContextTypes';
 import { userService } from '../services/UserService';
 import { useUser } from '../context/UserContext';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-export default function MainTabs() {
+export default function HomeScreen() {
 
   const {setUserDetails} = useUser();
 

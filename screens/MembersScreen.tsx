@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList, Image, Alert, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, FlatList, Image, Alert, RefreshControl, RootTagContext } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainTabParamList, RootStackParamList } from '../types';
 import { UserDetails } from '../context/ContextTypes';
 import { friendsService } from '../services/FriendsService';
+import { gruopsService } from '../services/GroupsService';
+import { RouteProp } from '@react-navigation/native';
 
 
-type FriendRequestsScreenProps = {
- navigation: StackNavigationProp<RootStackParamList, 'Home'>;
-};
-
-export default function FriendRequestsScreen({ navigation }: FriendRequestsScreenProps): JSX.Element {
-  const [friendRequests, setFriendRequests] = useState<UserDetails[]>([]);
+export default function MembersScreen({ navigation , route}: any): JSX.Element {
+  const [members, setMembers] = useState<UserDetails[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchFriendRequests = async (): Promise<void> => {
+  const fetchGroupMembers = async (): Promise<void> => {
     try {
-      const friendsData:UserDetails[]|null = await friendsService.getFriendRequests();
-      if(friendsData){
-          setFriendRequests(friendsData);
+      const membersData:UserDetails[]|null = await gruopsService.fetchGroupMembers(route.params.id);
+      if(membersData){
+        setMembers(membersData);
       }
     } catch (error) {
       console.log(error);
@@ -26,33 +24,16 @@ export default function FriendRequestsScreen({ navigation }: FriendRequestsScree
   }
 
   useEffect(() => {
-    fetchFriendRequests();
+    fetchGroupMembers();
   }, []);
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
-        await fetchFriendRequests();
+        await fetchGroupMembers();
         setRefreshing(false);
     }, []);
 
-  const addFriend = async (mail: string) => {
-    try {
-      const acceptFriendRequestData:FriendRequestData = {email : mail}; 
-      await friendsService.acceptFriendRequest(acceptFriendRequestData);
-      Alert.alert(
-        'Success',
-        'Friend request accepted!'
-      );
-      setFriendRequests(friendRequests.filter((friend) => friend.email !== mail));
-    } catch (error:any) {
-      console.log(error);
-      Alert.alert(
-        'Error',
-        error.response?.data?.message || 'An error occurred during accepting friend request'
-      )
-    }
-  }
-    const renderFriend = ({ item }: { item: UserDetails }) => (
+    const renderMembers = ({ item }: { item: UserDetails }) => (
     <TouchableOpacity  style={styles.friendContainer}>
         <View style={styles.avatarContainer}>
         <Image 
@@ -63,17 +44,14 @@ export default function FriendRequestsScreen({ navigation }: FriendRequestsScree
         <View style={styles.friendInfo}>
         <Text style={styles.friendName}>{item.name + " " + item.lastname || " null"}</Text>
         </View>
-        <TouchableOpacity onPress={() => addFriend(item.email)} style={styles.messageButton}>
-        <Text style={styles.messageButtonText}>+</Text>
-        </TouchableOpacity>
     </TouchableOpacity>
     );
 
     return (
     <SafeAreaView style={styles.container}>
         <FlatList
-        data={friendRequests}
-        renderItem={renderFriend}
+        data={members}
+        renderItem={renderMembers}
         keyExtractor={item => item.uid}
         style={styles.list}
         refreshControl={

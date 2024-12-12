@@ -80,6 +80,16 @@ export const settingsScreenOptions = ({ navigation }: any): BottomTabNavigationO
 export const membersScreenOptions = ({ navigation ,route }: any): StackNavigationOptions => ({
   title: route.params?.name + " Members" || 'Group Members',
   headerTintColor: '#007AFF',
+  headerRight: () => (
+    <TouchableOpacity 
+      onPress={() => {
+       navigation.push("AddGroupMember", {id: route.params?.id})
+      }} 
+      style={{ marginRight: 15 }}
+    >
+      <Icon name="plus" size={24} color="#007AFF" />
+    </TouchableOpacity>
+  ),
  });
 
  export const conversationScreenOptions = ({ navigation ,route }: any): StackNavigationOptions => ({

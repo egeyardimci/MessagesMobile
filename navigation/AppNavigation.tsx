@@ -11,6 +11,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import FriendRequestsScreen from '../screens/FriendRequestsScreen';
 import MembersScreen from '../screens/MembersScreen';
 import { conversationScreenOptions, membersScreenOptions } from './NavigationOptions';
+import AddGroupMemberScreen from "../screens/AddGroupMemberScreen";
 
 
 const Stack = createStackNavigator();
@@ -71,6 +72,14 @@ export const AppNavigation = () => {
         name="Members" 
         component={MembersScreen}
         options={membersScreenOptions}
+      />
+      <Stack.Screen 
+        name="AddGroupMember" 
+        component={AddGroupMemberScreen}
+        options={{
+          title: 'Add Member',
+          headerTintColor: '#007AFF',
+        }}
       />
       </Stack.Navigator>
     </NavigationContainer>

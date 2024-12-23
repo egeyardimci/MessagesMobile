@@ -16,10 +16,13 @@ import { useUser } from '../context/UserContext';
 import { messagesService } from '../services/MessagesService';
 import { getRelativeTime } from '../utils/RelativeTime';
 import { gruopsService } from '../services/GroupsService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { io } from 'socket.io-client';
 
 export default function ConversationScreen({ navigation, route }: any): JSX.Element {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [socket, setSocket] = useState<any>(null);
   const {userDetails} = useUser();
 
   const getUserMessages = async () => {
@@ -44,26 +47,73 @@ export default function ConversationScreen({ navigation, route }: any): JSX.Elem
     }
   };
 
-  useEffect(() => {
-    if(!route.params.isGroup){
-      getUserMessages();
+
+const connectToAuthenticatedChat = async () => {
+    
+    const token = await AsyncStorage.getItem('token');
+
+    const socket = io('https://ce51-159-20-69-5.ngrok-free.app', {
+        transports: ['websocket'],
+        upgrade: false,
+        query: {
+            token: token,
+            receiverId: route.params.id,
+            isGroup: route.params.isGroup
+        }
+    });
+
+    socket.on('connect', () => {
+        console.log('Successfully authenticated and connected to chat server');
+    });
+
+    socket.on('connect_error', (error:any) => {
+        console.error('Connection failed:', error);
+        if (error.message.includes('Authentication failed')) {
+            // Handle authentication failure (redirect to login, etc.)
+        }
+    });
+
+    socket.on('message', (message) => {
+      console.log('new message', message);
+      setMessages(prevMessages => [...prevMessages, message]);
+      setMessage('');
+  });
+
+    return socket;
+};
+
+useEffect(() => {
+  let socketInstance: any = null;
+
+  const initializeSocket = async () => {
+    socketInstance = await connectToAuthenticatedChat();
+    setSocket(socketInstance);
+  };
+
+  if (!route.params.isGroup) {
+    getUserMessages();
+  } else {
+    getGroupMessages();
+  }
+
+  if(socketInstance === null){
+    initializeSocket();
+  }
+
+  // Cleanup function
+  return () => {
+    if (socketInstance) {
+      console.log('Disconnecting socket...');
+      socketInstance.off('connect');
+      socketInstance.off('connect_error');
+      socketInstance.off('message');
+      socketInstance.disconnect();
     }
-    else{
-      getGroupMessages();
-    }
-    //TODO
-    //open socket connection
-  }, []);
+  };
+}, []);
 
   const sendMessage = () => {
-    if(!route.params.isGroup){
-      //TODO
-      //send message to user
-    }
-    else{
-      //TODO
-      //send message to group
-    }
+    socket.emit('message', {sender: userDetails?.email,content: message, receiverId: route.params.id ,receiver: route.params.email, groupMessage: route.params.isGroup});
   };
 
   const renderMessage = ({ item }: { item: Message }) => (

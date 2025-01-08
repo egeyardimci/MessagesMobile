@@ -15,6 +15,7 @@ messageList: [
         sender: string,
         receiver: string,
         groupMessage: boolean
+        senderName: string
     }
     ]
 };
@@ -26,6 +27,7 @@ type LoginData = {
   
 type RegisterData = {
     name: string;
+    lastname:string
     email: string;
     password: string;
 };

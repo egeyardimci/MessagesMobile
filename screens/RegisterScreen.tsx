@@ -30,7 +30,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps): JSX
         return;
       }
   
-      const response = await authService.register({ name, email, password });
+      const response = await authService.register({ name,lastname, email, password });
       Alert.alert(
         'User Created!',
         'User successfully createad navigate to the login page and, login to the app.'

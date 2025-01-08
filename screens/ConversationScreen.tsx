@@ -52,7 +52,7 @@ const connectToAuthenticatedChat = async () => {
     
     const token = await AsyncStorage.getItem('token');
 
-    const socket = io('https://ce51-159-20-69-5.ngrok-free.app', {
+    const socket = io('http://10.0.2.2:9092', {
         transports: ['websocket'],
         upgrade: false,
         query: {
@@ -113,7 +113,7 @@ useEffect(() => {
 }, []);
 
   const sendMessage = () => {
-    socket.emit('message', {sender: userDetails?.email,content: message, receiverId: route.params.id ,receiver: route.params.email, groupMessage: route.params.isGroup});
+    socket.emit('message', {content: message, receiverId: route.params.id ,receiver: route.params.email, groupMessage: route.params.isGroup});
   };
 
   const renderMessage = ({ item }: { item: Message }) => (
@@ -121,6 +121,11 @@ useEffect(() => {
       styles.messageContainer,
       item.sender === userDetails?.id ? styles.myMessage : styles.otherMessage
     ]}>
+      {item.groupMessage && <Text style={[
+        styles.authorText
+      ]}>
+        {item.senderName}
+      </Text>}
       <Text style={[
         styles.messageText,
         item.sender === userDetails?.id ? styles.myMessageText : styles.otherMessageText
@@ -199,6 +204,11 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
+  },
+  authorText: {
+    fontSize: 16,
+    color: 'black',
+    fontWeight: 'bold',
   },
   myMessageText: {
     color: '#fff',

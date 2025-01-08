@@ -5,6 +5,7 @@ export interface Message {
     sender:string;
     receiver:string;
     groupMessage:boolean;
+    senderName:string;
 }
 
 export interface UserDetails {
